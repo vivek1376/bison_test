@@ -6,6 +6,8 @@
 #define PRINT_INDTOKDEC(st, x) do { printIndentAndDecr(); printf("%s%s\n", st, x); } while (0)
 #define PRINT_INDTOK(st, x) do { printIndent(); printf("%s%s\n", st, x); } while (0)
 
+#define MAX_CHILDREN 32
+
 // Declare stuff from Flex that Bison needs to know about:
 extern int yylex();
 extern int yyparse();
@@ -21,10 +23,18 @@ void printIndentAndDecr();
 
 char str1[] = "identifier";
 
-typedef struct _st {
-  int i;
-  char *ch;
-} st1;
+enum nodeType {
+  DECLARATION,
+  STATEMENT
+};
+
+typedef struct _node {
+  struct _node *children[MAX_CHILDREN];
+  enum nodeType type;
+  char *st;  // string representation
+} Node;
+
+typedef Node* TreeNode;
 
 %}
 
@@ -52,7 +62,7 @@ typedef struct _st {
 
 %type <sval> declarations declaration global variable_declaration type_mark statement assignment_statement destination
 
-%type <sval> expression
+%type <ival> expression
 
 %type <ival> number
 %%
@@ -69,27 +79,24 @@ program_header:
     identifier
     IS_RW { 
         PRINT_INDTOKDEC("program_header:", "");
-        /* indent--; */
-        /* indent--; */
-        /* printIndent(); */
-        /* printf("%s\n", $1); */
-        /* printIndent(); */
-        /* printf("%s\n", $2); */
-        /* printIndent(); */
-        /* printf("%s\n", $3); */
     }
     ;
 
 program_body:
     declarations
     BEGIN_RW
-    statement
+    statements
     END_RW PROGRAM_RW
     ;
 
 declarations:
     %empty
     | declarations declaration
+    ;
+
+statements:
+    %empty
+    | statements statement
     ;
 
 declaration:
@@ -106,7 +113,7 @@ statement:
 assignment_statement:
     destination
     ASSIGN_OP
-    number
+    expression
     ;
 
 destination:
@@ -114,7 +121,7 @@ destination:
     ;
 
 expression:
-    number { printf("number: %s\n", $1); }
+    number { printf("number: %d\n", $1); }
     ;
 
 number:
