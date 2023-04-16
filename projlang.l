@@ -1,6 +1,7 @@
 %{
   #include <stdio.h>
   #include <string.h>
+  #include "tree.h"
   #include "projlang.tab.h"  // to get the token types from Bison
 
 %}

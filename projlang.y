@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "tree.h"
 
 #define PRINT_INDTOKDEC(st, x) do { printIndentAndDecr(); printf("%s%s\n", st, x); } while (0)
 #define PRINT_INDTOK(st, x) do { printIndent(); printf("%s%s\n", st, x); } while (0)
 
-#define MAX_CHILDREN 32
+
 
 // Declare stuff from Flex that Bison needs to know about:
 extern int yylex();
@@ -22,26 +23,13 @@ void printIndent();
 void printIndentAndDecr();
 
 char str1[] = "identifier";
-
-enum nodeType {
-  DECLARATION,
-  STATEMENT
-};
-
-typedef struct _node {
-  struct _node *children[MAX_CHILDREN];
-  enum nodeType type;
-  char *st;  // string representation
-} Node;
-
-typedef Node* TreeNode;
-
 %}
 
 
 %union {
   int ival;
   char *sval;
+  Node* tnode;
 }
 
 
@@ -62,7 +50,7 @@ typedef Node* TreeNode;
 
 %type <sval> declarations declaration global variable_declaration type_mark statement assignment_statement destination
 
-%type <ival> expression
+%type <tnode> expression
 
 %type <ival> number
 %%
