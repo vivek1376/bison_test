@@ -1,6 +1,9 @@
 Program MyTestProgram is
 
+variable i : integer;
+
 begin
 
+i := 100;
 
 end program.
