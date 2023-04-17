@@ -211,13 +211,25 @@ expression:
     ;
 
 arithOp:
-    arithOp PLUS relation
-    | arithOp MINUS relation
+    arithOp PLUS relation {
+      $$ = createNode("arithOp"); 
+      addChild($$, $1); 
+      addChild($$, $2); 
+      addChild($$, $3); 
+    }
+    | arithOp MINUS relation {
+      $$ = createNode("arithOp"); 
+      addChild($$, $1); 
+      addChild($$, $2); 
+      addChild($$, $3); 
+    }
     | relation { $$ = createNode("arithOp"); addChild($$, $1); }
     ;
 
 relation:
-    relation LESS_THAN term 
+    relation LESS_THAN term { $$ = createNode("relation"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    }
     | relation GREATER_EQUAL term 
     | relation LESS_EQUAL term 
     | relation GREATER_THAN term 

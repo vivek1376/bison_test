@@ -6,7 +6,7 @@ variable d : integer;
 
 begin
 
-i := -100;
+i := -100 + 11;
 c := "A";
 d := -i;
 
