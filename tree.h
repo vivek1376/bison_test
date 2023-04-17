@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include <stdlib.h>
 
 #define MAX_CHILDREN 32
@@ -12,6 +13,7 @@
 enum nodeType {
   DECLARATION,
   STATEMENT,
+  /* EPSILON, */
   DEFAULTNODE
 };
 
@@ -29,8 +31,10 @@ typedef struct _node {
 typedef Node* TreeNode;
 
 Node* createNode(char*);
-
+void printTree(Node*, int);
 void addChildn(Node*, Node*);
 void addChilds(Node*, char*);
+void addChildren_n(Node*, int, ...);
+void addChildren_s(Node*, int, ...);
 
 #endif

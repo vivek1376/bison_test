@@ -4,8 +4,8 @@
 #include <string.h>
 #include "tree.h"
 
-#define PRINT_INDTOKDEC(st, x) do { printIndentAndDecr(); printf("%s%s\n", st, x); } while (0)
-#define PRINT_INDTOK(st, x) do { printIndent(); printf("%s%s\n", st, x); } while (0)
+/* #define PRINT_INDTOKDEC(st, x) do { printIndentAndDecr(); printf("%s%s\n", st, x); } while (0) */
+/* #define PRINT_INDTOK(st, x) do { printIndent(); printf("%s%s\n", st, x); } while (0) */
 
 
 
@@ -19,10 +19,13 @@ extern FILE *yyin;
 void yyerror(const char *s);
 
 int indent = 20;
-void printIndent();
-void printIndentAndDecr();
+/* void printIndent(); */
+void printIndent(int indent);
+/* void printIndentAndDecr(); */
 
 char str1[] = "identifier";
+
+Node *rootNode;
 %}
 
 
@@ -44,13 +47,25 @@ char str1[] = "identifier";
 
 %token <sval> DOT
 
-%type <sval> colon identifier variable_rw integer_rw float_rw string_rw bool_rw
+%type <tnode> identifier
+%type <tnode> fullprogram 
+%type <tnode> program_header
+%type <tnode> program_body
 
-%type <sval> fullprogram program_header program_body
+%type <tnode> declarations 
+%type <tnode> declaration 
+%type <tnode> global 
+%type <tnode> variable_declaration
+%type <tnode> type_mark
 
-%type <sval> declarations declaration global variable_declaration type_mark statement 
+%type <tnode> statements
+%type <tnode> statement
 
 %type <tnode> assignment_statement
+%type <tnode> if_statement
+%type <tnode> loop_statement
+%type <tnode> return_statement
+%type <tnode> else_clause
 
 %type <tnode> destination
 %type <tnode> expression
@@ -60,7 +75,10 @@ char str1[] = "identifier";
 
 fullprogram:
     program_header program_body DOT {
-        PRINT_INDTOKDEC("fullprogram: ", $3);
+      $$ = createNode("program"); 
+      addChild($$, $1); addChild($$, $2);  /* addChild($$, $3); */
+
+      rootNode = $$;
     }
     ;
 
@@ -68,7 +86,7 @@ program_header:
     PROGRAM_RW
     identifier
     IS_RW { 
-        PRINT_INDTOKDEC("program_header:", "");
+      $$ = createNode("program_header"); addChild($$, $1); addChild($$, $2); addChild($$, $3);
     }
     ;
 
@@ -76,112 +94,140 @@ program_body:
     declarations
     BEGIN_RW
     statements
-    END_RW PROGRAM_RW
+    END_RW
+    PROGRAM_RW {
+      $$ = createNode("program_body"); addChild($$, $1); addChild($$, $2); addChild($$, $3);
+      addChild($$, $4);
+      addChild($$, $5);
+    }
     ;
 
 declarations:
-    %empty
-    | declarations declaration
+    %empty { $$ = NULL; }
+    | declarations declaration {
+      $$ = createNode("declarations"); addChild($$, $1); addChild($$, $2);
+    }
     ;
 
 statements:
-    %empty
-    | statements statement
+    %empty { $$ = NULL; }
+    | statements
+    statement { $$ = createNode("statements"); addChildren_n($$, 2, $1, $2); }
     ;
 
 declaration:
     global
     variable_declaration
-    SEMICOLON {}
+    SEMICOLON {
+      $$ = createNode("declaration");
+      addChildren_n($$, 2, $1, $2); 
+      addChild($$, $3);
+    }
     ;
 
 statement:
     assignment_statement 
-    SEMICOLON
+    SEMICOLON { $$ = createNode("statement"); addChild($$, $1); addChild($$, $2); }
+    | if_statement
+    SEMICOLON { $$ = createNode("statement"); addChild($$, $1); addChild($$, $2); }
+    | loop_statement
+    SEMICOLON { $$ = createNode("statement"); addChild($$, $1); addChild($$, $2); }
+    | return_statement
+    SEMICOLON { $$ = createNode("statement"); addChild($$, $1); addChild($$, $2); }
     ;
 
 assignment_statement:
     destination
     ASSIGN_OP
     expression {
-      $$ = createNode("assignment_statement:");
-      addChild($$, $1);
+      $$ = createNode("assignment_statement"); addChild($$, $1);
       addChild($$, $2);
       addChild($$, $3);
     }
     ;
 
+if_statement:
+    IF_RW
+    L_PAREN
+    expression
+    R_PAREN
+    THEN_RW
+    statements
+    else_clause
+    END_RW
+    IF_RW { 
+      $$ = createNode("if_statement"); addChild($$, $1); addChild($$, $2);
+      addChild($$, $3);
+      addChild($$, $4);
+      addChild($$, $5);
+      addChild($$, $6);
+      addChild($$, $7);
+      addChild($$, $8);
+      addChild($$, $9);
+    }
+
+    ;
+
+loop_statement:
+    %empty
+    ;
+
+return_statement:
+    %empty  
+    ;
+
+else_clause:
+    %empty { $$ = NULL; }
+    | ELSE_RW
+    statements { $$ = createNode("else_clause"); addChild($$, $1); addChild($$, $2); }
+    ;
+
 destination:
-    identifier { printf("destination: %s\n", $1); }
+    identifier { $$ = createNode("destination"); addChild($$, $1); }
     ;
 
 expression:
-    number { printf("number: %d\n", $1); }
+    number { $$ = createNode("number"); addChild($$, $1); }
     ;
 
 number:
     INT { 
       $$ = createNode("number");
-      $$->isTerminal = 1;
+
+      char *numSt = malloc(10 * sizeof *numSt);
+      snprintf(numSt, 10, "%d", $1);
+      
+      addChild($$, numSt);
+      /* $$->isTerminal = 1; */
     }
     ;
 
 global:
-    %empty
-    | GLOBAL_RW
+    %empty { $$ = NULL;  /* TODO explain why not create node and then add child ? */ }
+    | GLOBAL_RW { $$ = createNode($1); }
     ;
 
 variable_declaration:
-    variable_rw
+    VARIABLE_RW 
     identifier
-    colon 
+    COLON 
     type_mark { 
-        indent -= 2;
-        printIndent();
-        printf("variable_declaration:\n");
-        /* printf("vari..\n"); */
+      $$ = createNode("variable_declaration"); addChild($$, $1); addChild($$, $2); 
+      addChild($$, $3); 
+      addChild($$, $4); 
     }
     ;
 
-variable_rw:    
-    VARIABLE_RW {
-        PRINT_INDTOK("variable_rw: ", $1);
-    }
-    ;
-
-colon:
-    COLON {
-        PRINT_INDTOK("colon: ", $1);
-    }
-    ;
- 
 type_mark:
-    integer_rw { PRINT_INDTOKDEC("type_mark:", ""); }
-    | float_rw { PRINT_INDTOKDEC("type_mark:", ""); }
-    | string_rw { PRINT_INDTOKDEC("type_mark:", ""); }
-    | bool_rw { PRINT_INDTOKDEC("type_mark:", ""); }
-    ;
-
-integer_rw:
-    INTEGER_RW { PRINT_INDTOKDEC("integer_rw: ", $1); }
-    ;
-
-float_rw:
-    FLOAT_RW { PRINT_INDTOKDEC("float_rw: ", $1); }
-    ;
-
-string_rw:
-    STRING_RW { PRINT_INDTOKDEC("string_rw: ", $1); }
-    ;
-
-bool_rw:
-    BOOL_RW { PRINT_INDTOKDEC("bool_rw: ", $1); }
+    INTEGER_RW { $$ = createNode("type_mark"); addChild($$, $1); }
+    | FLOAT_RW { $$ = createNode($1); }
+    | STRING_RW { $$ = createNode($1); }
+    | BOOL_RW { $$ = createNode($1); }
     ;
 
 identifier:
-    IDENTIFIER { PRINT_INDTOK("identifier: ", $1); }
+    IDENTIFIER { $$ = createNode("identifier"); addChild($$, $1); }
     ;
-
 
 %%
 
@@ -202,6 +248,7 @@ int main(int, char**) {
   yyparse();
 
   // if (printTreeFlag) printTree(stdout, syntaxTree);  // printTreeFlag is set by -p option
+  printTree(rootNode, 0);
 }
 
 
@@ -211,28 +258,56 @@ void yyerror(const char *s) {
   exit(-1);
 }
 
-void printIndent() {
+/* void printIndent() { */
+/*   int i  = 0; */
+
+/*   for (i = 0; i < indent; i++) */
+/*     putchar(' '); */
+/* } */
+
+inline void printIndent(int indent) {
   int i  = 0;
 
   for (i = 0; i < indent; i++)
     putchar(' ');
 }
+/* void printIndentAndDecr() { */
+/*   printIndent(); */
+/*   indent -= 2; */
+/* } */
 
-void printIndentAndDecr() {
-  printIndent();
-  indent -= 2;
+void printTree(Node *node, int indent) {
+  if (!node) return;  // TODO redundant ?
+
+  printIndent(indent);
+
+
+  if (node->isTerminal)
+    printf("🏉");
+
+  printf("%s\n", node->st);
+
+  int i;
+
+  for (i = 0; i < MAX_CHILDREN; i++) {
+    if (node->children[i])
+      printTree(node->children[i], indent + 2);
+    else
+      break;
+  }
+  
 }
-
 
 
 Node* createNode(char *p_st) {
   Node *n = malloc(sizeof *n);
   n->st = p_st;
-  n->type = STATEMENT;
+  n->type = DEFAULTNODE;
   n->isTerminal = 0;
 
   int i;
-
+  
+  // set children NULL
   for (i = 0; i < MAX_CHILDREN; i++) {
     n->children[i] = NULL;
   }
@@ -241,6 +316,8 @@ Node* createNode(char *p_st) {
 }
 
 void addChildn(Node *n, Node *child) {
+
+  if (!child) return;
 
   /* Node *temp; */
   int i = 0;
@@ -272,17 +349,26 @@ void addChilds(Node *n, char *st) {
   // TODO add assert() ?
 }
 
-/* void addChilds(Node *n, char *st) { */
-/*   int i = 0; */
-/*   /1* Node *child; *1/ */
 
-/* /1*   for (i = 0; i < MAX_CHILDREN; i++) { *1/ */
-/* /1*     if (n->children[i] == NULL) { *1/ */
-/* /1*       child = createNode(st); *1/ */
-/* /1*       child->isTerminal = 1; *1/ */
-/* /1*       child->children[i] = n; *1/ */
+// variadic functions
+void addChildren_n(Node *n, int num, ...) {
+  va_list valist;
 
-/* /1*       n->children[i] = child; *1/ */
-/* /1*       break; *1/ */
-/* /1*   } *1/ */
-/* } */
+  va_start(valist, num);
+
+  int i;
+  for (i = 0; i < num; i++) {
+    addChildn(n, va_arg(valist, Node*));
+  }
+}
+
+void addChildren_s(Node *n, int num, ...) {
+  va_list valist;
+
+  va_start(valist, num);
+
+  int i;
+  for (i = 0; i < num; i++) {
+    addChilds(n, va_arg(valist, char*));
+  }
+}
