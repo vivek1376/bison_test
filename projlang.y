@@ -48,11 +48,13 @@ char str1[] = "identifier";
 
 %type <sval> fullprogram program_header program_body
 
-%type <sval> declarations declaration global variable_declaration type_mark statement assignment_statement destination
+%type <sval> declarations declaration global variable_declaration type_mark statement 
 
+%type <tnode> assignment_statement
+
+%type <tnode> destination
 %type <tnode> expression
-
-%type <ival> number
+%type <tnode> number
 %%
 
 
@@ -101,7 +103,12 @@ statement:
 assignment_statement:
     destination
     ASSIGN_OP
-    expression
+    expression {
+      $$ = createNode("assignment_statement:");
+      addChild($$, $1);
+      addChild($$, $2);
+      addChild($$, $3);
+    }
     ;
 
 destination:
@@ -113,7 +120,10 @@ expression:
     ;
 
 number:
-    INT { printf("%d\n", $1); }
+    INT { 
+      $$ = createNode("number");
+      $$->isTerminal = 1;
+    }
     ;
 
 global:
@@ -214,3 +224,65 @@ void printIndentAndDecr() {
 }
 
 
+
+Node* createNode(char *p_st) {
+  Node *n = malloc(sizeof *n);
+  n->st = p_st;
+  n->type = STATEMENT;
+  n->isTerminal = 0;
+
+  int i;
+
+  for (i = 0; i < MAX_CHILDREN; i++) {
+    n->children[i] = NULL;
+  }
+
+  return n;
+}
+
+void addChildn(Node *n, Node *child) {
+
+  /* Node *temp; */
+  int i = 0;
+
+  for (i = 0; i < MAX_CHILDREN; i++) {
+    if (n->children[i] == NULL) {
+      n->children[i] = child;
+      break;
+    }
+  }
+}
+
+void addChilds(Node *n, char *st) {
+
+  int i = 0;
+  Node *child;
+
+  for (i = 0; i < MAX_CHILDREN; i++) {
+    if (n->children[i] == NULL) {
+
+      child = createNode(st);
+      child->isTerminal = 1;
+
+      n->children[i] = child;
+      break;
+    }
+  }
+
+  // TODO add assert() ?
+}
+
+/* void addChilds(Node *n, char *st) { */
+/*   int i = 0; */
+/*   /1* Node *child; *1/ */
+
+/* /1*   for (i = 0; i < MAX_CHILDREN; i++) { *1/ */
+/* /1*     if (n->children[i] == NULL) { *1/ */
+/* /1*       child = createNode(st); *1/ */
+/* /1*       child->isTerminal = 1; *1/ */
+/* /1*       child->children[i] = n; *1/ */
+
+/* /1*       n->children[i] = child; *1/ */
+/* /1*       break; *1/ */
+/* /1*   } *1/ */
+/* } */
