@@ -230,22 +230,38 @@ relation:
     relation LESS_THAN term { $$ = createNode("relation"); addChild($$, $1); 
       addChild($$, $2); addChild($$, $3); 
     }
-    | relation GREATER_EQUAL term 
-    | relation LESS_EQUAL term 
-    | relation GREATER_THAN term 
-    | relation EQUALS term 
-    | relation NOT_EQUAL term 
+    | relation GREATER_EQUAL term { $$ = createNode("relation"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    } 
+    | relation LESS_EQUAL term { $$ = createNode("relation"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    } 
+    | relation GREATER_THAN term { $$ = createNode("relation"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    } 
+    | relation EQUALS term { $$ = createNode("relation"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    } 
+    | relation NOT_EQUAL term { $$ = createNode("relation"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    } 
     | term { $$ = createNode("relation"); addChild($$, $1); }
     ;
 
 term:
-    term MULTIPLY factor 
-    | term DIVIDE factor 
+    term MULTIPLY factor { $$ = createNode("term"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    }
+    | term DIVIDE factor { $$ = createNode("term"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); 
+    } 
     | factor { $$ = createNode("term"); addChild($$, $1); }
     ;
 
 factor:
-    name { $$ = createNode("factor"); addChild($$, $1); }
+    L_PAREN expression R_PAREN { $$ = createNode("factor"); addChild($$, $1);
+      addChild($$, $2); addChild($$, $3); }
+    | name { $$ = createNode("factor"); addChild($$, $1); } 
     | MINUS name { $$ = createNode("factor"); addChild($$, $1); addChild($$, $2); }
     | number { $$ = createNode("factor"); addChild($$, $1); }
     | MINUS number { $$ = createNode("factor"); addChild($$, $1); addChild($$, $2); }
