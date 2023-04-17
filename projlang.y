@@ -37,6 +37,7 @@ Node *rootNode;
 
 
 %token <ival> INT
+%token <sval> STRING
 %token <sval> IDENTIFIER
 
 %token <sval> PROGRAM_RW IS_RW BEGIN_RW END_RW GLOBAL_RW
@@ -69,6 +70,8 @@ Node *rootNode;
 
 %type <tnode> destination
 %type <tnode> expression
+%type <tnode> arithOp
+%type <tnode> term
 %type <tnode> number
 %%
 
@@ -187,7 +190,19 @@ destination:
     ;
 
 expression:
-    number { $$ = createNode("number"); addChild($$, $1); }
+    expression AMPERSAND arithOp
+    | arithOp { $$ = createNode("expression"); addChild($$, $1); }
+    | STRING { $$ = createNode("expression"); addChild($$, $1); }
+    ;
+
+arithOp:
+    arithOp PLUS term
+    | arithOp MINUS term
+    | term { $$ = createNode("arithOp"); addChild($$, $1); }
+    ;
+
+term:
+    number { $$ = createNode("term"); addChild($$, $1); }
     ;
 
 number:

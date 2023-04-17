@@ -58,6 +58,9 @@ false   { yylval.sval = strdup(yytext); return FALSE_RW; }
 "."		{ yylval.sval = strdup(yytext); return DOT; }
 
 [0-9]+	{ yylval.sval = strdup(yytext); yylval.ival = atoi(yytext); return INT; }
+
+\"[A-Za-z_]*\"   { yylval.sval = strdup(yytext); return STRING; }
+
 [a-zA-Z0-9]+	{ yylval.sval = strdup(yytext); yylval.sval = strdup(yytext); return IDENTIFIER; }
 
 
