@@ -75,6 +75,7 @@ Node *rootNode;
 %type <tnode> factor
 %type <tnode> relation
 %type <tnode> number
+%type <tnode> string
 %%
 
 
@@ -194,7 +195,6 @@ destination:
 expression:
     expression AMPERSAND arithOp
     | arithOp { $$ = createNode("expression"); addChild($$, $1); }
-    | STRING { $$ = createNode("expression"); addChild($$, $1); }
     ;
 
 arithOp:
@@ -221,6 +221,7 @@ term:
 
 factor:
     number { $$ = createNode("factor"); addChild($$, $1); }
+    | string { $$ = createNode("factor"); addChild($$, $1); }
     ;
 
 number:
@@ -231,8 +232,11 @@ number:
       snprintf(numSt, 10, "%d", $1);
       
       addChild($$, numSt);
-      /* $$->isTerminal = 1; */
     }
+    ;
+
+string:
+    STRING { $$ = createNode("string"); addChild($$, $1); }
     ;
 
 global:
@@ -375,11 +379,12 @@ void addChilds(Node *n, char *st) {
       child->isTerminal = 1;
 
       n->children[i] = child;
-      break;
+      return;
     }
   }
 
-  // TODO add assert() ?
+  // we have exceeded MAX_CHILDREN limit
+  assert(0);
 }
 
 

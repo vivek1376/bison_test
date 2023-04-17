@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #define MAX_CHILDREN 32
 

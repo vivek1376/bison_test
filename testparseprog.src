@@ -6,5 +6,6 @@ variable c : string;
 begin
 
 i := 100;
+c := "A";
 
 end program.
