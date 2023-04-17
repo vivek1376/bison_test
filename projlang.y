@@ -272,6 +272,9 @@ factor:
 
 name:
     identifier { $$ = createNode("name"); addChild($$, $1); }
+    | identifier L_BRACKET expression R_BRACKET { $$ = createNode("relation"); addChild($$, $1); 
+      addChild($$, $2); addChild($$, $3); addChild($$, $4); 
+    } 
     ;
 
 number:

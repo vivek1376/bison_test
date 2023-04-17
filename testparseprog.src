@@ -8,6 +8,6 @@ begin
 
 i := (100 + 23);
 c := "A";
-d := -i;
+d := -i[(c)];
 
 end program.
