@@ -72,6 +72,7 @@ Node *rootNode;
 %type <tnode> expression
 %type <tnode> arithOp
 %type <tnode> term
+%type <tnode> factor
 %type <tnode> relation
 %type <tnode> number
 %%
@@ -210,11 +211,16 @@ relation:
     | relation EQUALS term 
     | relation NOT_EQUAL term 
     | term { $$ = createNode("relation"); addChild($$, $1); }
-
     ;
 
 term:
-    number { $$ = createNode("term"); addChild($$, $1); }
+    term MULTIPLY factor 
+    | term DIVIDE factor 
+    | factor { $$ = createNode("term"); addChild($$, $1); }
+    ;
+
+factor:
+    number { $$ = createNode("factor"); addChild($$, $1); }
     ;
 
 number:
