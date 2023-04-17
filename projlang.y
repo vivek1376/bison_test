@@ -72,6 +72,7 @@ Node *rootNode;
 %type <tnode> expression
 %type <tnode> arithOp
 %type <tnode> term
+%type <tnode> relation
 %type <tnode> number
 %%
 
@@ -196,9 +197,20 @@ expression:
     ;
 
 arithOp:
-    arithOp PLUS term
-    | arithOp MINUS term
-    | term { $$ = createNode("arithOp"); addChild($$, $1); }
+    arithOp PLUS relation
+    | arithOp MINUS relation
+    | relation { $$ = createNode("arithOp"); addChild($$, $1); }
+    ;
+
+relation:
+    relation LESS_THAN term 
+    | relation GREATER_EQUAL term 
+    | relation LESS_EQUAL term 
+    | relation GREATER_THAN term 
+    | relation EQUALS term 
+    | relation NOT_EQUAL term 
+    | term { $$ = createNode("relation"); addChild($$, $1); }
+
     ;
 
 term:
