@@ -75,6 +75,7 @@ Node *rootNode;
 %type <tnode> factor
 %type <tnode> relation
 %type <tnode> number
+%type <tnode> name
 %type <tnode> string
 %%
 
@@ -232,10 +233,17 @@ term:
     ;
 
 factor:
-    number { $$ = createNode("factor"); addChild($$, $1); }
+    name { $$ = createNode("factor"); addChild($$, $1); }
+    | MINUS name { $$ = createNode("factor"); addChild($$, $1); addChild($$, $2); }
+    | number { $$ = createNode("factor"); addChild($$, $1); }
+    | MINUS number { $$ = createNode("factor"); addChild($$, $1); addChild($$, $2); }
     | string { $$ = createNode("factor"); addChild($$, $1); }
     | TRUE_RW { $$ = createNode("factor"); addChild($$, $1); }
     | FALSE_RW { $$ = createNode("factor"); addChild($$, $1); }
+    ;
+
+name:
+    identifier { $$ = createNode("name"); addChild($$, $1); }
     ;
 
 number:

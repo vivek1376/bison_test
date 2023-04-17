@@ -2,12 +2,12 @@ Program MyTestProgram is
 
 variable i : integer;
 variable c : string;
-variable d : bool;
+variable d : integer;
 
 begin
 
-i := 100 | 12;
+i := -100;
 c := "A";
-d := false;
+d := -i;
 
 end program.
