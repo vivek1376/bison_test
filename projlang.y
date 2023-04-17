@@ -193,7 +193,19 @@ destination:
     ;
 
 expression:
-    expression AMPERSAND arithOp
+    expression AMPERSAND arithOp { 
+      $$ = createNode("expression"); 
+      addChild($$, $1);
+      addChild($$, $2); 
+      addChild($$, $3); 
+    }
+    | expression PIPE arithOp { 
+      $$ = createNode("expression"); 
+      addChild($$, $1);
+      addChild($$, $2); 
+      addChild($$, $3); 
+    }
+    | NOT_RW arithOp { $$ = createNode("expression"); addChild($$, $1); addChild($$, $2); }
     | arithOp { $$ = createNode("expression"); addChild($$, $1); }
     ;
 
