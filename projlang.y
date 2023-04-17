@@ -234,6 +234,8 @@ term:
 factor:
     number { $$ = createNode("factor"); addChild($$, $1); }
     | string { $$ = createNode("factor"); addChild($$, $1); }
+    | TRUE_RW { $$ = createNode("factor"); addChild($$, $1); }
+    | FALSE_RW { $$ = createNode("factor"); addChild($$, $1); }
     ;
 
 number:
