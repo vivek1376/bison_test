@@ -436,7 +436,8 @@ void printTree(Node *node, int indent) {
 
 
   if (node->isTerminal)
-    printf("🏉");
+    printf("🔔");
+    /* printf("🏉"); */
 
   printf("%s\n", node->st);
 

@@ -1,0 +1,57 @@
+projlang.y:179.5-10: warning: empty rule for typed nonterminal, and no action [-Wother]
+  179 |     %empty
+      |     ^~~~~~
+projlang.y:183.5-10: warning: empty rule for typed nonterminal, and no action [-Wother]
+  183 |     %empty  
+      |     ^~~~~~
+projlang.y: warning: 3 reduce/reduce conflicts [-Wconflicts-rr]
+projlang.y: warning: reduce/reduce conflict on token SEMICOLON [-Wcounterexamples]
+  Example: • SEMICOLON
+  First reduce derivation
+    statement
+    ↳ loop_statement SEMICOLON
+      ↳ •
+  Second reduce derivation
+    statement
+    ↳ return_statement SEMICOLON
+      ↳ •
+projlang.y: warning: reduce/reduce conflict on token SEMICOLON [-Wcounterexamples]
+  Example: • SEMICOLON
+  First reduce derivation
+    statement
+    ↳ loop_statement SEMICOLON
+      ↳ •
+  Second reduce derivation
+    statement
+    ↳ return_statement SEMICOLON
+      ↳ •
+projlang.y: warning: reduce/reduce conflict on token SEMICOLON [-Wcounterexamples]
+  First example: program_header declarations BEGIN_RW statements IF_RW L_PAREN expression R_PAREN THEN_RW statements ELSE_RW statements • SEMICOLON END_RW IF_RW SEMICOLON END_RW PROGRAM_RW DOT $end
+  First reduce derivation
+    $accept
+    ↳ fullprogram                                                                                                                                                                                                  $end
+      ↳ program_header program_body                                                                                                                                                                            DOT
+                       ↳ declarations BEGIN_RW statements                                                                                                                                    END_RW PROGRAM_RW
+                                               ↳ statements statement
+                                                            ↳ if_statement                                                                                                         SEMICOLON
+                                                              ↳ IF_RW L_PAREN expression R_PAREN THEN_RW statements else_clause                                       END_RW IF_RW
+                                                                                                                    ↳ ELSE_RW statements
+                                                                                                                              ↳ statements statement
+                                                                                                                                           ↳ loop_statement SEMICOLON
+                                                                                                                                             ↳ •
+  Second example: program_header declarations BEGIN_RW statements IF_RW L_PAREN expression R_PAREN THEN_RW statements ELSE_RW statements • SEMICOLON END_RW IF_RW SEMICOLON END_RW PROGRAM_RW DOT $end
+  Second reduce derivation
+    $accept
+    ↳ fullprogram                                                                                                                                                                                                    $end
+      ↳ program_header program_body                                                                                                                                                                              DOT
+                       ↳ declarations BEGIN_RW statements                                                                                                                                      END_RW PROGRAM_RW
+                                               ↳ statements statement
+                                                            ↳ if_statement                                                                                                           SEMICOLON
+                                                              ↳ IF_RW L_PAREN expression R_PAREN THEN_RW statements else_clause                                         END_RW IF_RW
+                                                                                                                    ↳ ELSE_RW statements
+                                                                                                                              ↳ statements statement
+                                                                                                                                           ↳ return_statement SEMICOLON
+                                                                                                                                             ↳ •
+projlang.y:183.5-10: warning: rule useless in parser due to conflicts [-Wother]
+  183 |     %empty  
+      |     ^~~~~~

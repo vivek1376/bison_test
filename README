@@ -1,0 +1,69 @@
+
+#### links
+
+https://en.wikipedia.org/wiki/LALR_parser
+https://en.wikipedia.org/wiki/LR_parser
+https://www.admb-project.org/tools/flex/compiler.pdf
+https://github.com/keith-packard/lola
+https://github.com/vivek1376/flexbison
+https://www.gnu.org/software/bison/manual/html_node/Table-of-Symbols.html
+https://www.math.utah.edu/docs/info/bison_4.html
+https://www.math.utah.edu/docs/info/bison_7.html#SEC61
+https://www.math.utah.edu/docs/info/bison_8.html#SEC79
+https://www.math.utah.edu/docs/info/bison_6.html#SEC34
+https://www.math.utah.edu/docs/info/bison_6.html#SEC40
+https://aquamentus.com/flex_bison.html
+https://www.peroxide.dk/download/tutorials/pxdscript/chapter3.html
+https://lloydrochester.com/post/flex-bison/json-parse-ast/
+https://sites.cs.ucsb.edu/~yufeiding/cs160/project4.html
+https://www.postgresql.org/docs/current/parser-stage.html
+https://encyclopedia.pub/entry/30829
+
+
+* https://www3.nd.edu/~dthain/compilerbook/chapter5.pdf
+* https://web.stanford.edu/class/archive/cs/cs143/cs143.1128/handouts/120%20Introducing%20bison.pdf
+
+https://ianfinlayson.net/class/cpsc401/notes/08-bison
+
+https://onedrive.live.com/?authkey=%21AJ1sFp9BErsVvo4&id=E60FFF8F0BAE3B5E%2139547&cid=E60FFF8F0BAE3B5E&parId=root&parQt=sharedby&o=OneUp
+
+http://marvin.cs.uidaho.edu/Teaching/CS445/pas02.html
+http://alumni.cs.ucr.edu/~lgao/teaching/bison.html
+
+
+https://steemit.com/utopian-io/@drifter1/writing-a-simple-compiler-on-my-own-abstract-syntax-tree-structure-c-flex-bison
+
+https://www.math.utah.edu/docs/info/cpp_1.html
+
+https://www.gnu.org/software/bison/manual/html_node/Empty-Rules.html
+https://www.ibm.com/docs/en/zos/2.2.0?topic=handling-yyerror-function
+
+* http://web.mit.edu/gnu/doc/html/bison_13.html
+
+https://www.dei.isep.ipp.pt/~matos/cadeiras/lprog/ajudas/bison/bison_63.html
+
+https://www.cse.scu.edu/~m1wang/compiler/TutorialFlexBison.pdf
+
+https://www.capsl.udel.edu/courses/cpeg421/2012/slides/Tutorial-Flex_Bison.pdf
+
+* https://www.math.utah.edu/docs/info/bison_4.html
+* http://www.jonathanbeard.io/tutorials/FlexBisonC++
+* https://www.math.utah.edu/docs/info/bison_14.html#GLOSS22
+
+https://stackoverflow.com/questions/17590190/shift-reduce-conflicts-in-bison
+
+https://www.math.utah.edu/docs/info/bison_7.html
+
+* http://web.mit.edu/gnu/doc/html/flex_1.html
+
+* http://web.mit.edu/gnu/doc/html/flex_2.html#SEC5
+
+flex * https://web.stanford.edu/class/archive/cs/cs143/cs143.1128/handouts/050%20Flex%20In%20A%20Nutshell.pdf
+bison * https://www.eecg.utoronto.ca/~jzhu/csc467/readings/csc467-bison-tut.pdf
+
+* https://begriffs.com/posts/2021-11-28-practical-parsing.html
+* https://www.capsl.udel.edu/courses/cpeg421/2012/slides/Tutorial-Flex_Bison.pdf
+
+* https://www.usna.edu/Users/cs/wcbrown/courses/F20SI413/lec/l10/lec.html
+
+https://ohama.github.io/ocaml/ocamlyacc-tutorial/parseralgorithm/lookaheadtokens/
