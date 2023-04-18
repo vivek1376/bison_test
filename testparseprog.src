@@ -2,12 +2,29 @@ Program MyTestProgram is
 
 variable i : integer;
 variable c : string;
-variable d : integer;
+variable myArray : integer[15];
+
+
+
+procedure testproc : integer()
+
+begin
+
+if(true) then i := i + 1;
+else zach := zach + RYAN[2];
+end if;
+
+end procedure;
+
 
 begin
 
 i := (100 + 23);
-c := "A";
-d := -i[(c)];
+
+if(i > 100) then
+	i:= 1110;
+else
+    c := "hii";
+end if;
 
 end program.

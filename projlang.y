@@ -55,6 +55,11 @@ Node *rootNode;
 
 %type <tnode> declarations 
 %type <tnode> declaration 
+%type <tnode> procedure_declaration 
+%type <tnode> procedure_header
+%type <tnode> procedure_body
+%type <tnode> parameter_list
+%type <tnode> parameter
 %type <tnode> global 
 %type <tnode> variable_declaration
 %type <tnode> type_mark
@@ -67,6 +72,7 @@ Node *rootNode;
 %type <tnode> loop_statement
 %type <tnode> return_statement
 %type <tnode> else_clause
+%type <tnode> bound
 
 %type <tnode> destination
 %type <tnode> expression
@@ -130,6 +136,45 @@ declaration:
       addChildren_n($$, 2, $1, $2); 
       addChild($$, $3);
     }
+    | global
+    procedure_declaration
+    SEMICOLON {
+      $$ = createNode("declaration");
+      addChildren_n($$, 2, $1, $2); 
+      addChild($$, $3);
+    } 
+    ;
+
+procedure_declaration:
+    procedure_header
+    procedure_body { $$ = createNode("procedure_declaration"); addChild($$, $1); addChild($$, $2); }
+    ;
+
+procedure_header:
+    PROCEDURE_RW identifier COLON type_mark L_PAREN R_PAREN { $$ = createNode("procedure_header");
+      addChild($$, $1); addChild($$, $2); addChild($$, $3); addChild($$, $4); 
+      addChild($$, $5); addChild($$, $6); }
+    | PROCEDURE_RW identifier COLON type_mark L_PAREN parameter_list R_PAREN {
+      $$ = createNode("procedure_header");
+      addChild($$, $1); addChild($$, $2); addChild($$, $3); addChild($$, $4); addChild($$, $5); 
+      addChild($$, $6); addChild($$, $7); 
+    }
+    ;
+
+parameter_list:
+    parameter COMMA parameter_list { $$ = createNode("parameter_list"); addChild($$, $1);
+      addChild($$, $2); addChild($$, $3); }
+    | parameter { $$ = createNode("parameter_list"); addChild($$, $1); }
+    ;
+
+parameter:
+    variable_declaration { $$ = createNode("parameter"); addChild($$, $1); }
+    ;
+
+procedure_body:
+    declarations BEGIN_RW statements END_RW PROCEDURE_RW { $$ = createNode("procedure_body");
+      addChild($$, $1); addChild($$, $2); addChild($$, $3); addChild($$, $4); addChild($$, $5); 
+    }
     ;
 
 statement:
@@ -172,7 +217,6 @@ if_statement:
       addChild($$, $8);
       addChild($$, $9);
     }
-
     ;
 
 loop_statement:
@@ -180,7 +224,8 @@ loop_statement:
     ;
 
 return_statement:
-    %empty  
+    RETURN_RW
+    expression { $$ = createNode("return_statement"); addChild($$, $1); }
     ;
 
 else_clause:
@@ -306,7 +351,25 @@ variable_declaration:
       addChild($$, $3); 
       addChild($$, $4); 
     }
+    | VARIABLE_RW 
+    identifier
+    COLON 
+    type_mark
+    L_BRACKET
+    bound
+    R_BRACKET { 
+      $$ = createNode("variable_declaration"); addChild($$, $1); addChild($$, $2); 
+      addChild($$, $3); 
+      addChild($$, $4); 
+      addChild($$, $5); 
+      addChild($$, $6); 
+      addChild($$, $7); 
+    } 
     ;
+
+bound:
+     number { $$ = createNode("bound"); addChild($$, $1); }
+     ;
 
 type_mark:
     INTEGER_RW { $$ = createNode("type_mark"); addChild($$, $1); }
