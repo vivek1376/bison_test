@@ -12,8 +12,6 @@
 
 
 enum nodeType {
-  DECLARATION,
-  STATEMENT,
   /* EPSILON, */
   DEFAULTNODE
 };
