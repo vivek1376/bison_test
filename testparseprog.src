@@ -6,7 +6,7 @@ Program MyTestProgram is
 
 
 
-    procedure testproc : integer()
+    procedure testproc : integer(variable val1 : integer)
 
         begin
 
@@ -19,7 +19,7 @@ Program MyTestProgram is
 
     begin
 
-        i := (100 + 23);
+        i := (100 + 23.45);
         i := dd(5);
 
         if(i > 100) then

@@ -31,12 +31,14 @@ Node *rootNode;
 
 %union {
   int ival;
+  float fval;
   char *sval;
   Node* tnode;
 }
 
 
 %token <ival> INT
+%token <fval> FLOAT
 %token <sval> STRING
 %token <sval> IDENTIFIER
 
@@ -91,27 +93,25 @@ Node *rootNode;
 fullprogram:
     program_header program_body DOT {
       $$ = createNode("program"); 
-      addChild($$, $1); addChild($$, $2);  /* addChild($$, $3); */
+      addChild($$, $1);
+      addChild($$, $2);   
+      addChild($$, $3); 
 
       rootNode = $$;
     }
     ;
 
 program_header:
-    PROGRAM_RW
-    identifier
-    IS_RW { 
-      $$ = createNode("program_header"); addChild($$, $1); addChild($$, $2); addChild($$, $3);
+    PROGRAM_RW identifier IS_RW {       
+      $$ = createNode("program_header"); 
+      addChild($$, $1);
+      addChild($$, $2);
+      addChild($$, $3);
     }
     ;
 
 program_body:
-    declarations
-    BEGIN_RW
-    statements
-    END_RW
-    PROGRAM_RW {
-      $$ = createNode("program_body"); addChild($$, $1); addChild($$, $2); addChild($$, $3);
+    declarations BEGIN_RW statements END_RW PROGRAM_RW { $$ = createNode("program_body"); addChild($$, $1); addChild($$, $2); addChild($$, $3);
       addChild($$, $4);
       addChild($$, $5);
     }
@@ -127,7 +127,7 @@ declarations:
 statements:
     %empty { $$ = NULL; }
     | statements
-    statement { $$ = createNode("statements"); addChildren_n($$, 2, $1, $2); }
+    statement { $$ = createNode("statements"); addChild($$, $1); addChild($$, $2); }
     ;
 
 declaration:
@@ -164,7 +164,7 @@ procedure_header:
     ;
 
 parameter_list:
-    parameter COMMA parameter_list { $$ = createNode("parameter_list"); addChild($$, $1);
+    parameter_list COMMA parameter { $$ = createNode("parameter_list"); addChild($$, $1);
       addChild($$, $2); addChild($$, $3); }
     | parameter { $$ = createNode("parameter_list"); addChild($$, $1); }
     ;
@@ -218,16 +218,10 @@ assignment_statement:
     ;
 
 if_statement:
-    IF_RW
-    L_PAREN
-    expression
-    R_PAREN
-    THEN_RW
-    statements
-    else_clause
-    END_RW
-    IF_RW { 
-      $$ = createNode("if_statement"); addChild($$, $1); addChild($$, $2);
+    IF_RW L_PAREN expression R_PAREN THEN_RW statements else_clause END_RW IF_RW {
+      $$ = createNode("if_statement");
+      addChild($$, $1);
+      addChild($$, $2);
       addChild($$, $3);
       addChild($$, $4);
       addChild($$, $5);
@@ -239,8 +233,7 @@ if_statement:
     ;
 
 loop_statement:
-    FOR_RW L_PAREN assignment_statement SEMICOLON expression R_PAREN
-    statements END_RW FOR_RW {
+    FOR_RW L_PAREN assignment_statement SEMICOLON expression R_PAREN statements END_RW FOR_RW {
       $$ = createNode("loop_statement");
       addChild($$, $1);
       addChild($$, $2);
@@ -255,18 +248,26 @@ loop_statement:
     ;
 
 return_statement:
-    RETURN_RW
-    expression { $$ = createNode("return_statement"); addChild($$, $1); }
+    RETURN_RW expression { 
+      $$ = createNode("return_statement"); 
+      addChild($$, $1); 
+    }
     ;
 
 else_clause:
     %empty { $$ = NULL; }
-    | ELSE_RW
-    statements { $$ = createNode("else_clause"); addChild($$, $1); addChild($$, $2); }
+    | ELSE_RW statements { $$ = createNode("else_clause"); addChild($$, $1); addChild($$, $2); }
     ;
 
 destination:
     identifier { $$ = createNode("destination"); addChild($$, $1); }
+    | identifier L_BRACKET expression R_BRACKET { 
+      $$ = createNode("destination"); 
+      addChild($$, $1); 
+      addChild($$, $2); 
+      addChild($$, $3); 
+      addChild($$, $4); 
+    }
     ;
 
 expression:
@@ -358,8 +359,18 @@ number:
     INT { 
       $$ = createNode("number");
 
-      char *numSt = malloc(10 * sizeof *numSt);
-      snprintf(numSt, 10, "%d", $1);
+      const int numlen = 10;
+      char *numSt = malloc(numlen * sizeof *numSt);
+      snprintf(numSt, numlen, "%d", $1);
+      
+      addChild($$, numSt);
+    }
+    | FLOAT { 
+      $$ = createNode("number");
+
+      const int numlen = 10;
+      char *numSt = malloc(numlen * sizeof *numSt);
+      snprintf(numSt, numlen, "%f", $1);
       
       addChild($$, numSt);
     }
@@ -383,14 +394,7 @@ variable_declaration:
       addChild($$, $3); 
       addChild($$, $4); 
     }
-    | VARIABLE_RW 
-    identifier
-    COLON 
-    type_mark
-    L_BRACKET
-    bound
-    R_BRACKET { 
-      $$ = createNode("variable_declaration"); addChild($$, $1); addChild($$, $2); 
+    | VARIABLE_RW  identifier COLON  type_mark L_BRACKET bound R_BRACKET {  $$ = createNode("variable_declaration"); addChild($$, $1); addChild($$, $2); 
       addChild($$, $3); 
       addChild($$, $4); 
       addChild($$, $5); 
@@ -418,21 +422,22 @@ identifier:
 
 
 int main(int, char**) {
+
   // open a file handle to a particular file:
   FILE *myfile = fopen("testparseprog.src", "r");
-  // make sure it is valid:
+
+  // make sure it is valid
   if (!myfile) {
     printf("can't open file!\n");
     return -1;
   }
 
-  // Set flex to read from it instead of defaulting to STDIN:
+  // Set flex to read from it instead of defaulting to STDIN
   yyin = myfile;
 
-  // Parse through the input:
+  // Parse through the input
   yyparse();
 
-  // if (printTreeFlag) printTree(stdout, syntaxTree);  // printTreeFlag is set by -p option
   printTree(rootNode, 0);
 }
 
@@ -443,12 +448,6 @@ void yyerror(const char *s) {
   exit(-1);
 }
 
-/* void printIndent() { */
-/*   int i  = 0; */
-
-/*   for (i = 0; i < indent; i++) */
-/*     putchar(' '); */
-/* } */
 
 inline void printIndent(int indent) {
   int i  = 0;
@@ -456,10 +455,7 @@ inline void printIndent(int indent) {
   for (i = 0; i < indent; i++)
     putchar(' ');
 }
-/* void printIndentAndDecr() { */
-/*   printIndent(); */
-/*   indent -= 2; */
-/* } */
+
 
 void printTree(Node *node, int indent) {
   if (!node) return;  // TODO redundant ?
@@ -501,6 +497,7 @@ Node* createNode(char *p_st) {
   return n;
 }
 
+
 void addChildn(Node *n, Node *child) {
 
   if (!child) return;
@@ -518,6 +515,7 @@ void addChildn(Node *n, Node *child) {
   // we have exceeded MAX_CHILDREN limit
   assert(0);
 }
+
 
 void addChilds(Node *n, char *st) {
 
@@ -551,6 +549,7 @@ void addChildren_n(Node *n, int num, ...) {
     addChildn(n, va_arg(valist, Node*));
   }
 }
+
 
 void addChildren_s(Node *n, int num, ...) {
   va_list valist;
