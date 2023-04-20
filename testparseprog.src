@@ -10,6 +10,8 @@ program test_program is
 	return x + y * 4;
     end procedure;
 begin
-    a := "dfs4545345df";
+    a := 3;
+    a := f(3);
+    tmp := putInteger(a);
 
 end program .
