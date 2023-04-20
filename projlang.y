@@ -421,7 +421,7 @@ identifier:
 %%
 
 
-int main(int, char**) {
+int main(int argc, char** argv) {
 
   // open a file handle to a particular file:
   FILE *myfile = fopen("testparseprog.src", "r");
