@@ -1,37 +1,15 @@
-Program MyTestProgram is
-
-    variable i : integer;
-    variable c : string;
-    variable myArray : integer[15];
-
-
-
-    procedure testproc : integer(variable val1 : integer)
-
-        begin
-
-        if(true) then i := i + 1;
-        else zach := zach + RYAN[2];
-        end if;
-
-    end procedure;
-
-
+program test_program is
+    variable a : integer;
+    variable tmp : bool;
+    procedure f : integer(variable x : integer)
+        variable b : integer;
+        variable y : integer;
     begin
+        b := 3;
+        y := b;
+	return x + y * 4;
+    end procedure;
+begin
+    a := "dfs4545345df";
 
-        i := (100 + 23.45);
-        i := dd(5);
-
-        if(i > 100) then
-            i:= 1110;
-        else
-            c := "hii";
-        end if;
-
-        for(i := 0; i < max)
-        	x := Fib(i);
-            out := putInteger(x);
-            i := i + 1;
-        end for;
-
-end program.
+end program .
