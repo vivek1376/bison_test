@@ -58,6 +58,8 @@ Node *rootNode;
 %type <tnode> procedure_declaration 
 %type <tnode> procedure_header
 %type <tnode> procedure_body
+%type <tnode> procedure_call
+%type <tnode> argument_list
 %type <tnode> parameter_list
 %type <tnode> parameter
 %type <tnode> global 
@@ -177,6 +179,23 @@ procedure_body:
     }
     ;
 
+procedure_call:
+    identifier L_PAREN R_PAREN { $$ = createNode("procedure_call"); addChild($$, $1);
+      addChild($$, $2); addChild($$, $3); }
+      | identifier L_PAREN argument_list R_PAREN { $$ = createNode("procedure_call"); 
+      addChild($$, $1);
+      addChild($$, $2); 
+      addChild($$, $3); 
+      addChild($$, $4); 
+    }
+    ;
+
+argument_list:
+    argument_list COMMA expression { $$ = createNode("argument_list"); addChild($$, $1);
+      addChild($$, $2); addChild($$, $3); }
+    | expression { $$ = createNode("argument_list"); addChild($$, $1); }
+    ;
+
 statement:
     assignment_statement 
     SEMICOLON { $$ = createNode("statement"); addChild($$, $1); addChild($$, $2); }
@@ -220,7 +239,19 @@ if_statement:
     ;
 
 loop_statement:
-    %empty
+    FOR_RW L_PAREN assignment_statement SEMICOLON expression R_PAREN
+    statements END_RW FOR_RW {
+      $$ = createNode("loop_statement");
+      addChild($$, $1);
+      addChild($$, $2);
+      addChild($$, $3);
+      addChild($$, $4);
+      addChild($$, $5);
+      addChild($$, $6);
+      addChild($$, $7);
+      addChild($$, $8);
+      addChild($$, $9);
+    }
     ;
 
 return_statement:
@@ -306,6 +337,7 @@ term:
 factor:
     L_PAREN expression R_PAREN { $$ = createNode("factor"); addChild($$, $1);
       addChild($$, $2); addChild($$, $3); }
+    | procedure_call { $$ = createNode("factor"); addChild($$, $1); }
     | name { $$ = createNode("factor"); addChild($$, $1); } 
     | MINUS name { $$ = createNode("factor"); addChild($$, $1); addChild($$, $2); }
     | number { $$ = createNode("factor"); addChild($$, $1); }
@@ -479,9 +511,12 @@ void addChildn(Node *n, Node *child) {
   for (i = 0; i < MAX_CHILDREN; i++) {
     if (n->children[i] == NULL) {
       n->children[i] = child;
-      break;
+      return;
     }
   }
+
+  // we have exceeded MAX_CHILDREN limit
+  assert(0);
 }
 
 void addChilds(Node *n, char *st) {

@@ -1,30 +1,37 @@
 Program MyTestProgram is
 
-variable i : integer;
-variable c : string;
-variable myArray : integer[15];
+    variable i : integer;
+    variable c : string;
+    variable myArray : integer[15];
 
 
 
-procedure testproc : integer()
+    procedure testproc : integer()
 
-begin
+        begin
 
-if(true) then i := i + 1;
-else zach := zach + RYAN[2];
-end if;
+        if(true) then i := i + 1;
+        else zach := zach + RYAN[2];
+        end if;
 
-end procedure;
+    end procedure;
 
 
-begin
+    begin
 
-i := (100 + 23);
+        i := (100 + 23);
+        i := dd(5);
 
-if(i > 100) then
-	i:= 1110;
-else
-    c := "hii";
-end if;
+        if(i > 100) then
+            i:= 1110;
+        else
+            c := "hii";
+        end if;
+
+        for(i := 0; i < max)
+        	x := Fib(i);
+            out := putInteger(x);
+            i := i + 1;
+        end for;
 
 end program.
